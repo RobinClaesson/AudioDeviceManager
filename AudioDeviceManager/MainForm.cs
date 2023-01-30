@@ -56,6 +56,7 @@ namespace AudioDeviceManager
                 var deviceControl = new AudioDeviceControl(_audioRecordingDevices[i]);
                 deviceControl.Top = InputsLabel.Bottom + 10 + (deviceControl.Height + 5) * i;
                 deviceControl.Width = inputDevicePanel.Width;
+                deviceControl.SetFlip(true);
                 deviceControl.RadioButton.Click += RecordingRadioButtonChecked;
 
                 _recordingDeviceControls.Add(deviceControl);

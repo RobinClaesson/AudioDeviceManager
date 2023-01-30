@@ -16,9 +16,11 @@ namespace AudioDeviceManager
         public CoreAudioDevice AudioDevice { get; private set; }
         public Icon Icon { get; private set; }
         public RadioButton RadioButton { get; private set; }
+       
 
-        private Color notDefaultColor = Color.LightGray;
-        private Color isDefaultColor = Color.MediumSeaGreen;
+        private Color _notDefaultColor = Color.LightGray;
+        private Color _isDefaultColor = Color.MediumSeaGreen;
+        private bool _flip = false;
 
         public AudioDeviceControl(CoreAudioDevice coreAudioDevice)
         {
@@ -42,8 +44,8 @@ namespace AudioDeviceManager
             }
 
             RadioButton = new RadioButton();
-            RadioButton.Top = 25 - RadioButton.Height / 2;
             RadioButton.Left = 50;
+            RadioButton.Top = 25 - RadioButton.Height / 2;
             RadioButton.BackColor = Color.Transparent;
             RadioButton.Text = AudioDevice.Name;
             RadioButton.Name = $"{AudioDevice.Name}RadioButton";
@@ -62,11 +64,18 @@ namespace AudioDeviceManager
         {
             base.OnPaint(e);
 
-            Brush bgBrush = AudioDevice.IsDefaultDevice ? new SolidBrush(isDefaultColor) : new SolidBrush(notDefaultColor);
+            Brush bgBrush = AudioDevice.IsDefaultDevice ? new SolidBrush(_isDefaultColor) : new SolidBrush(_notDefaultColor);
 
-            e.Graphics.FillRectangle(bgBrush, 0, 0, Width, Height);
-            e.Graphics.DrawIcon(Icon, new Rectangle(5, 5, 40, 40));
-
+            if (_flip)
+            {
+                e.Graphics.FillRectangle(bgBrush, 0, 0, Width, Height);
+                e.Graphics.DrawIcon(Icon, new Rectangle(Width - 45, Height - 45, 40, 40));
+            }
+            else
+            {
+                e.Graphics.FillRectangle(bgBrush, 0, 0, Width, Height);
+                e.Graphics.DrawIcon(Icon, new Rectangle(5, 5, 40, 40));
+            }
             bgBrush.Dispose();
         }
 
@@ -75,6 +84,21 @@ namespace AudioDeviceManager
             AudioDevice.SetAsDefault();
             AudioDevice.SetAsDefaultCommunications();
             Parent.Refresh();
+        }
+
+        public void SetFlip(bool flip)
+        {
+            _flip = flip;
+            if(flip)
+            {
+                RadioButton.Left = Width - 50 - RadioButton.Width;
+                RadioButton.RightToLeft = RightToLeft.Yes;
+            }
+            else
+            {
+                RadioButton.Left = 50;
+                RadioButton.RightToLeft = RightToLeft.No;
+            }
         }
     }
 }
